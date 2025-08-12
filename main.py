@@ -16,24 +16,22 @@ def initialize_rpa():
     except Exception as e:
         return False, f'Failed to initialize RPA: {e}'
 
-def download_file_and_move(downloads_dir):
-    """Downloads Excel file and moves it to the target directory."""
+def download_and_move_file(downloads_dir):
+    """Downloads an Excel file to the project's root folder and moves it to the target directory."""
     try:
-        user_downloads_dir = os.path.join(os.path.expanduser('~'), 'Downloads')
-
         rpa.click('Download Excel')
         rpa.wait(5.0)
-        
-        excel_files = glob.glob(os.path.join(user_downloads_dir, '*.xlsx'))
+
+        project_root = os.getcwd()
+        excel_files = glob.glob(os.path.join(project_root, '*.xlsx'))
         
         if not excel_files:
-            return False, 'No Excel files found in the default downloads directory.'
-            
-        latest_file = max(excel_files, key=os.path.getctime)
+            return False, f'No Excel file found in the project root directory: {project_root}'
         
+        latest_file = max(excel_files, key=os.path.getmtime)
         shutil.move(latest_file, downloads_dir)
         
-        return True, f'File moved to {downloads_dir} successfully.'
+        return True, f'File "{os.path.basename(latest_file)}" was successfully moved to {downloads_dir}.'
     except Exception as e:
         return False, f'Failed to download or move the file: {e}'
 
@@ -123,7 +121,7 @@ def main():
         print(message)
         
         # Step 3: Download file
-        success, message = download_file_and_move(downloads_dir)
+        success, message = download_and_move_file(downloads_dir)
         if not success:
             print(f'Error: {message}')
             return
