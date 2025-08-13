@@ -14,3 +14,6 @@ The goal of this task is to create a Robotic Process Automation (RPA) script tha
 ## How to Run the Project
 
 To run this script, follow these steps:
+1. Open a terminal in the project root.
+2. Install dependencies: pip install rpa pandas openpyxl.
+3. Run the script: python main.py

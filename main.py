@@ -6,6 +6,9 @@ import pandas
 import os
 import shutil
 import glob
+import time
+import datetime
+
 
 def initialize_rpa():
     """Initializes the RPA environment and navigates to the challenge website."""
@@ -24,6 +27,7 @@ def download_and_move_file(downloads_dir):
 
         project_root = os.getcwd()
         excel_files = glob.glob(os.path.join(project_root, '*.xlsx'))
+        # excel_files = os.path.join(os.path.expanduser('~'), 'Downloads')
         
         if not excel_files:
             return False, f'No Excel file found in the project root directory: {project_root}'
@@ -31,30 +35,19 @@ def download_and_move_file(downloads_dir):
         latest_file = max(excel_files, key=os.path.getmtime)
         shutil.move(latest_file, downloads_dir)
         
-        return True, f'File "{os.path.basename(latest_file)}" was successfully moved to {downloads_dir}.'
+        return True, f'File {os.path.basename(latest_file)} was successfully moved to {downloads_dir}.'
     except Exception as e:
         return False, f'Failed to download or move the file: {e}'
 
 def clear_download_directory(downloads_dir):
-    """Clears the downloads directory after user confirmation."""
-    if not os.listdir(downloads_dir):
-        return True, f'The folder {downloads_dir} is already empty.'
-    
-    for attempt in range(3):
-        response = input(f'The folder {downloads_dir} is not empty. Do you want to clear it and download a new file? (Y/n): ')
-        if response.upper() == 'Y':
-            try:
-                shutil.rmtree(downloads_dir)
-                os.makedirs(downloads_dir)
-                return True, f'Folder {downloads_dir} was cleared.'
-            except Exception as e:
-                return False, f'Failed to clear {downloads_dir}. Reason: {e}'
-        elif response.lower() == 'n':
-            return False, 'Download cancelled by user. Exiting script.'
-        else:
-            print(f'Invalid input. Please enter Y for yes or n for no. You have {2 - attempt} attempt(s) left.')
-            
-    return False, 'Too many invalid attempts. Exiting program.'
+    """Clears the downloads directory to ensure it's empty before downloading a new file."""
+    try:
+        if os.path.exists(downloads_dir):
+            shutil.rmtree(downloads_dir)
+        os.makedirs(downloads_dir)
+        return True, f'The folder {downloads_dir} was successfully created.'
+    except Exception as e:
+        return False, f'Failed to clear or create the folder {downloads_dir}. Reason: {e}'
 
 def import_data(downloads_dir):
     """Reads data from the downloaded Excel file using pandas.""" 
@@ -97,11 +90,26 @@ def fill_form_with_data(df):
     except Exception as e:
         return False, f'An error occurred while filling the form: {e}'
 
+def save_results(output_dir):
+    """Retrieves the final score and saves it to a text file."""
+    try:
+        time_now = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+        final_score = rpa.read('//div[@class="message2"]')
+        results_file_path = os.path.join(output_dir, f'{time_now}_result.txt')
+        
+        with open(results_file_path, 'w') as f:
+            f.write(final_score)
+        
+        return True, f'The result has been saved to the file: {results_file_path}'
+    except Exception as e:
+        return False, f'Failed to retrieve or save the result: {e}'
+    
 def main():
     """Main function to orchestrate the RPA process."""
     print('Starting RPA Challenge automation...')
     downloads_dir = os.path.join(os.getcwd(), 'data', 'input')
-    os.makedirs(downloads_dir, exist_ok=True)
+    output_dir = os.path.join(os.getcwd(), 'data', 'output')
+    os.makedirs(output_dir, exist_ok=True)
     rpa_initialized = False
     
     try:
@@ -148,8 +156,13 @@ def main():
             print(f'Error: {message}')
             return
         print(message)
-        
-        print('\nRPA Challenge completed successfully!')
+
+        # Step 7: Save the results
+        success, message = save_results(output_dir)
+        if not success:
+            print(f'Error: {message}')
+            return
+        print(message)
 
     except Exception as e:
         print(f'\nAn unexpected error occurred during the process: {e}')
