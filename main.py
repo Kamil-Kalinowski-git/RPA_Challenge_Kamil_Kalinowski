@@ -26,13 +26,13 @@ def download_and_move_file(downloads_dir):
         rpa.wait(5.0)
 
         project_root = os.getcwd()
-        excel_files = glob.glob(os.path.join(project_root, '*.xlsx'))
-        # excel_files = os.path.join(os.path.expanduser('~'), 'Downloads')
+        excel_file = glob.glob(os.path.join(project_root, '*.xlsx'))
+        # excel_file = os.path.join(os.path.expanduser('~'), 'Downloads')
         
-        if not excel_files:
+        if not excel_file:
             return False, f'No Excel file found in the project root directory: {project_root}'
         
-        latest_file = max(excel_files, key=os.path.getmtime)
+        latest_file = max(excel_file, key=os.path.getmtime)
         shutil.move(latest_file, downloads_dir)
         
         return True, f'File {os.path.basename(latest_file)} was successfully moved to {downloads_dir}.'
