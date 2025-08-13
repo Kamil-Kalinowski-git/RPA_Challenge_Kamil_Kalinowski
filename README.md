@@ -28,19 +28,3 @@ To run this script, follow these steps:
     ```bash
     python main.py
     ```
-
----
-
-## Tech Stack and Dependencies
-
-This project utilizes **Python** and the following key libraries to automate the RPA Challenge:
-
-| Package | Purpose |
-| :--- | :--- |
-| **rpa** | Automates browser interactions, such as clicking buttons, filling forms, and reading data from web pages. |
-| **pandas** | Reads data from the downloaded Excel file and processes it for form submission. |
-| **os** | Handles file system operations, including creating directories, checking file paths, and managing file locations. |
-| **shutil** | Manages high-level file operations, such as moving the downloaded Excel file to a specific directory. |
-| **glob** | Finds files with a specific pattern (e.g., all `.xlsx` files) within a directory. |
-| **time** | Used to pause the script for a specified duration, ensuring the web page has time to load. |
-| **datetime** | Generates timestamps for naming the result file, ensuring unique filenames. |
