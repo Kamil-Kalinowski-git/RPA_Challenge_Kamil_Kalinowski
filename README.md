@@ -2,7 +2,10 @@
 
 This project is a script that automates the process of data entry into the web application at `rpachallenge.com`.
 
+---
+
 ## Objective
+
 The goal of this task is to create a Robotic Process Automation (RPA) script that will:
 1.  Open a web browser and navigate to `rpachallenge.com`.
 2.  Download the Excel data file provided on the website.
@@ -11,9 +14,33 @@ The goal of this task is to create a Robotic Process Automation (RPA) script tha
 5.  Save the result to a text file.
 6.  Close the browser.
 
+---
+
 ## How to Run the Project
 
 To run this script, follow these steps:
-1. Open a terminal in the project root.
-2. Install dependencies: pip install rpa pandas openpyxl.
-3. Run the script: python main.py
+1.  Open the project in your preferred code editor (e.g., Visual Studio Code).
+2.  Install dependencies by opening a terminal within the editor and running the following command:
+    ```bash
+    pip install -r requirements.txt
+    ```
+3.  Run the script:
+    ```bash
+    python main.py
+    ```
+
+---
+
+## Tech Stack and Dependencies
+
+This project utilizes **Python** and the following key libraries to automate the RPA Challenge:
+
+| Package | Purpose |
+| :--- | :--- |
+| **rpa** | Automates browser interactions, such as clicking buttons, filling forms, and reading data from web pages. |
+| **pandas** | Reads data from the downloaded Excel file and processes it for form submission. |
+| **os** | Handles file system operations, including creating directories, checking file paths, and managing file locations. |
+| **shutil** | Manages high-level file operations, such as moving the downloaded Excel file to a specific directory. |
+| **glob** | Finds files with a specific pattern (e.g., all `.xlsx` files) within a directory. |
+| **time** | Used to pause the script for a specified duration, ensuring the web page has time to load. |
+| **datetime** | Generates timestamps for naming the result file, ensuring unique filenames. |
