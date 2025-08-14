@@ -48,7 +48,6 @@ def download_file(driver, downloads_dir):
     except Exception as e:
         return False, f"Failed to download or move the file: {e}"
 
-
 def clear_download_directory(downloads_dir):
     """Clears the downloads directory to ensure it's empty before downloading a new file."""
     try:
@@ -58,7 +57,6 @@ def clear_download_directory(downloads_dir):
         return True, f"The folder {downloads_dir} was successfully created."
     except Exception as e:
         return False, f"Failed to clear the folder {downloads_dir}: {e}"
-
 
 def import_data(downloads_dir):
     """Reads data from the downloaded Excel file using pandas."""
@@ -71,17 +69,16 @@ def import_data(downloads_dir):
     except Exception as e:
         return False, f"An error occurred while importing data: {e}"
 
-
 def start_challenge(driver):
     """Clicks the Start button to begin the challenge."""
     try:
-        start_btn = WebDriverWait(driver, 15).until(
+        start_button = WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Start')]"))
         )
-        start_btn.click()
+        start_button.click()
 
-        time.sleep(3)
-
+        time.sleep(2)
+        
         return True, "RPA Challenge started successfully."
     except Exception as e:
         return False, f"Failed to click the Start button: {e}"
@@ -89,38 +86,34 @@ def start_challenge(driver):
 def fill_form_with_data(driver, df):
     """Fills out the form for each row of data and submits it using a loop."""
     try:
+        field_names = ["labelFirstName", "labelLastName", "labelCompanyName", "labelRole", "labelAddress", "labelEmail", "labelPhone"]
         for index, record in df.iterrows():
-            driver.find_element(By.XPATH, "//input[@ng-reflect-name='labelFirstName']").send_keys(record[0])
-            driver.find_element(By.XPATH, "//input[@ng-reflect-name='labelLastName']").send_keys(record[1])
-            driver.find_element(By.XPATH, "//input[@ng-reflect-name='labelCompanyName']").send_keys(record[2])
-            driver.find_element(By.XPATH, "//input[@ng-reflect-name='labelRole']").send_keys(record[3])
-            driver.find_element(By.XPATH, "//input[@ng-reflect-name='labelAddress']").send_keys(record[4])
-            driver.find_element(By.XPATH, "//input[@ng-reflect-name='labelEmail']").send_keys(record[5])
-            driver.find_element(By.XPATH, "//input[@ng-reflect-name='labelPhone']").send_keys(record[6])
-            driver.find_element(By.XPATH, "//input[@value='Submit']").click()      
+            for i, name in enumerate(field_names):
+                xpath = f"//input[@ng-reflect-name='{name}']"
+                driver.find_element(By.XPATH, xpath).send_keys(record[i])
+            driver.find_element(By.XPATH, "//input[@value='Submit']").click()
+    
         return True, "Form filled."
     except Exception as e:
         return False, f"An error occurred while filling the form: {e}"
 
-
 def save_results(driver, output_dir):
     """Retrieves the final score and saves it to a text file."""
     try:
-        time_now = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+        time_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
         final_score_el = WebDriverWait(driver, 20).until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, 'div.message2'))
+            EC.visibility_of_element_located((By.CSS_SELECTOR, "div.message2"))
         )
         final_score = final_score_el.text.strip()
 
-        results_file_path = os.path.join(output_dir, f'{time_now}_result.txt')
-        with open(results_file_path, 'w', encoding='utf-8') as f:
+        results_file_path = os.path.join(output_dir, f"{time_now}_result.txt")
+        with open(results_file_path, "w", encoding="utf-8") as f:
             f.write(final_score)
 
         return True, f"The result has been saved to the file: {results_file_path}"
     except Exception as e:
         return False, f"Failed to retrieve or save the result: {e}"
-
 
 def main():
     """Main function to orchestrate the RPA process."""
